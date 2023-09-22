@@ -241,7 +241,7 @@ export default function Home() {
                         ? "border-4 border-box border-red-600"
                         : ""
                     } ${
-                      !materialsStatus[code].status
+                      titles[sectionCodes[index]] == "N/A"
                         ? "border-4 border-box border-yellow-300"
                         : ""
                     }`}
