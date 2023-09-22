@@ -19,6 +19,13 @@ ZotBooks aims to serve an amazing user experience that's seamless, easy-to-under
 - Import from Study List
 - Queries Barnes and Nobles for up-to-date course information
 
+## Demo
+ZotBooks will be live soon<sub>tm</sub>! If you'd like to check it out locally:
+1. Clone the repository
+2. `npm start` to run the server
+3. `npm run dev` to start your localhost instance
+4. Enjoy!
+
 ## In-Progress Features/Misc
 - A full-scale refactoring 🫠
 - Links to ~~LibGen~~ legal textbook providers
