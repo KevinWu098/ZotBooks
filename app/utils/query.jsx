@@ -1,3 +1,5 @@
+const axios = require("axios");
+
 // Construct a request to PeterPortal with the params as a query string
 export async function queryWebsoc(sectionCodes) {
   // Construct a request to PeterPortal with the params as a query string
@@ -7,11 +9,6 @@ export async function queryWebsoc(sectionCodes) {
   ).toString();
 
   url.search = `${searchString}&quarter=Fall&year=2023`;
-
-  //The data from the API will duplicate a section if it has multiple locations.
-  //I.e., if there's a Tuesday section in two different (probably adjoined) rooms,
-  //courses[i].sections[j].meetings will have two entries, despite it being the same section.
-  //For now, I'm correcting it with removeDuplicateMeetings, but the API should handle this
 
   const response = await fetch(url, {
     headers: {
@@ -45,4 +42,24 @@ export function getCourseInfo(SOCObject) {
     }
   }
   return courseInfo;
+}
+
+const UCI_CAMPUS_CODE = "8206";
+const TERM_QUARTER =
+  "https://uci.bncollege.com/course-material-caching/course?campus=&term=&course=8206_1_23_F_27_200_1&section=&oer=false";
+
+export async function queryBN(BN_CODE, courseNumber) {
+  // Construct a request to Barnes and Nobles with the params as a query string
+  const url = new URL(
+    `https://uci.bncollege.com/course-material-caching/course?campus=&term=&course=8206_1_23_F_${BN_CODE.toString()}_${courseNumber.toString()}_1&section=&oer=false`
+  );
+
+  try {
+    const response = await axios.get(
+      `http://localhost:3001/scrape?BN_CODE=${BN_CODE.toString()}&courseNumber=${courseNumber.toString()}`
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
 }
