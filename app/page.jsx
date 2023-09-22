@@ -195,7 +195,15 @@ export default function Home() {
               <div className="flex flex-col mx-auto gap-y-4 w-[14rem] md:w-[24rem] lg:w-[30rem] max-h-[500px] overflow-scroll drop-shadow-md">
                 {sectionCodes.map((code, index) => (
                   <div
-                    className="text-black bg-white p-2 rounded-lg"
+                    className={`text-black bg-white p-2 rounded-lg ${
+                      materialsStatus[code]?.status == "REQUIRED"
+                        ? "border-4 border-box border-red-600"
+                        : ""
+                    } ${
+                      !materialsStatus[code].status
+                        ? "border-4 border-box border-yellow-300"
+                        : ""
+                    }`}
                     key={sectionCodes[index]}
                   >
                     <h3 className="text-left text-xl font-semibold">
