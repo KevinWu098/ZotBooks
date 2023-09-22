@@ -16,23 +16,63 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+const TERM = "8206_1_23_F";
 app.get("/scrape", async (req, res) => {
   const BN_CODE = req.query.BN_CODE;
+  const sectionCode = req.query.sectionCode;
   const courseNumber = req.query.courseNumber;
 
-  const url = new URL(
-    `https://uci.bncollege.com/course-material-caching/course?campus=&term=&course=8206_1_23_F_${BN_CODE}_${courseNumber}_1&section=&oer=false`
+  const sectionURL = new URL(
+    `https://uci.bncollege.com/course-material/findCourse?courseFinderSuggestion=SCHOOL_COURSE_SECTION&campus=8206&term=${TERM}&department=8206_1_${BN_CODE}&course=${courseNumber}&oer=false`
   );
+
+  let sectionNumber = "";
+  try {
+    const response = await axios.get(sectionURL);
+    sectionNumber = (
+      response.data.findIndex((item) => item.code === sectionCode) + 1
+    ).toString();
+  } catch (error) {
+    console.log("Error finding BN section number");
+    console.log(error);
+  }
+
+  const url = new URL(
+    `https://uci.bncollege.com/course-material-caching/course?campus=8206&term=${TERM}&course=8206_1_23_F_${BN_CODE}_${courseNumber}_${sectionNumber}&section=${sectionCode}&oer=false`
+  );
+
+  console.log(url);
 
   try {
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
 
-    const headline = $(".bned-description-headline");
+    const materialsTextArray = $(".js-bned-item-name-text")
+      .map(function () {
+        return $(this).text();
+      })
+      .get();
 
-    const headlineText = $(headline).text().replace(/\s+/g, " ").trim();
+    const uniqueMaterialsTextArray = [...new Set(materialsTextArray)];
 
-    res.status(200).send(headlineText);
+    const materialsText = uniqueMaterialsTextArray.join(", ");
+
+    const headlineText = $(".bned-description-headline")
+      .text()
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const requiredText = $(".badge")
+      .text()
+      .replace(/\s+/g, " ")
+      .trim()
+      .split(" ")[0];
+
+    const status = requiredText ? requiredText : headlineText;
+
+    const data = { status: status, materials: materialsText };
+
+    res.status(200).send(data);
   } catch (error) {
     console.log(error);
     res.status(500).send("Error scraping the website");

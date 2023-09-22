@@ -48,10 +48,10 @@ const UCI_CAMPUS_CODE = "8206";
 const TERM_QUARTER =
   "https://uci.bncollege.com/course-material-caching/course?campus=&term=&course=8206_1_23_F_27_200_1&section=&oer=false";
 
-export async function queryBN(BN_CODE, courseNumber) {
+export async function queryBN(BN_CODE, sectionCode, courseNumber) {
   try {
     const response = await axios.get(
-      `http://localhost:3001/scrape?BN_CODE=${BN_CODE.toString()}&courseNumber=${courseNumber.toString()}`
+      `http://localhost:3001/scrape?BN_CODE=${BN_CODE.toString()}&sectionCode=${sectionCode.toString()}&courseNumber=${courseNumber.toString()}`
     );
     return response.data;
   } catch (error) {

@@ -8,6 +8,8 @@ import Link from "next/link";
 
 const BN_CODES = {
   "I&C SCI": 459,
+  WRITING: 954,
+  ANTHRO: 36,
 };
 
 export default function Home() {
@@ -71,7 +73,11 @@ export default function Home() {
           const courseNumber =
             courseInfo[sectionCode].courseDetails.courseNumber;
 
-          statuses[sectionCode] = await queryBN(BN_CODE, courseNumber);
+          statuses[sectionCode] = await queryBN(
+            BN_CODE,
+            sectionCode,
+            courseNumber
+          );
         }
       }
 
@@ -184,8 +190,18 @@ export default function Home() {
                   <h3 className="text-left text-xl font-semibold">
                     {`${sectionCodes[index]} - {Some Course Title}`}
                   </h3>
+                  <p
+                    className={`text-left ml-4 ${
+                      materialsStatus[code]?.status == "REQUIRED"
+                        ? "text-red-600"
+                        : "text-black"
+                    }`}
+                  >
+                    {`Status: ${materialsStatus[code]?.status || "Unsearched"}`}
+                  </p>
                   <p className="text-left ml-4">
-                    {`Status: ${materialsStatus[code]}`}
+                    Required Materials:{" "}
+                    {materialsStatus[code]?.materials || "None"}
                   </p>
                 </div>
               ))}
