@@ -26,7 +26,6 @@ app.get("/scrape", async (req, res) => {
 
   try {
     const response = await axios.get(url);
-    console.log(response.data);
     const $ = cheerio.load(response.data);
 
     const headline = $(".bned-description-headline");

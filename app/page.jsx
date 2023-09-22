@@ -4,6 +4,7 @@ import { useState } from "react";
 import { queryWebsoc, getCourseInfo, queryBN } from "./utils/query";
 import loader from "../public/loader.gif";
 import Image from "next/image";
+import Link from "next/link";
 
 const BN_CODES = {
   "I&C SCI": 459,
@@ -12,6 +13,7 @@ const BN_CODES = {
 export default function Home() {
   const [studyListText, setStudyListText] = useState("");
   const [sectionCodes, setSectionCodes] = useState([]);
+  const [materialsStatus, setMaterialsStatus] = useState({});
 
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +31,7 @@ export default function Home() {
 
         const mergedCodes = Array.from(
           new Set([...existingCodesSet, ...newCodesSet])
-        );
+        ).sort();
 
         return mergedCodes;
       });
@@ -53,17 +55,28 @@ export default function Home() {
       }
 
       console.log("Querying Websoc...");
-      const courseInfo = getCourseInfo(await queryWebsoc(sectionCodes));
+      const courseInfo = getCourseInfo(await queryWebsoc(sectionCodes)); // returns codes in order (low -> high)
 
       console.log("Querying Barnes and Nobles...");
-      const materialStatus = [];
-      for (const course in courseInfo) {
-        const deptCode = courseInfo[course].courseDetails.deptCode;
-        const BN_CODE = BN_CODES[deptCode];
-        const courseNumber = courseInfo[course].courseDetails.courseNumber;
+      const statuses = {};
+      console.log(sectionCodes);
+      console.log(courseInfo);
+      for (const code in sectionCodes) {
+        const sectionCode = sectionCodes[code];
+        if (!courseInfo[sectionCode]) {
+          statuses.push("Error: Not a valid course code (doesn't exist)");
+        } else {
+          const deptCode = courseInfo[sectionCode].courseDetails.deptCode;
+          const BN_CODE = BN_CODES[deptCode];
+          const courseNumber =
+            courseInfo[sectionCode].courseDetails.courseNumber;
 
-        materialStatus.push(await queryBN(BN_CODE, courseNumber));
+          statuses[sectionCode] = await queryBN(BN_CODE, courseNumber);
+        }
       }
+
+      setMaterialsStatus(statuses);
+      console.log(materialsStatus);
 
       setLoading(false);
     } catch (error) {
@@ -121,11 +134,21 @@ export default function Home() {
           <Image
             src={loader}
             alt="loading gif"
-            className="text-black bg-white w-24 h-24 px-2 py-0 absolute top-50 left-50 rounded-full bg-cover"
+            className="text-black bg-white w-24 h-24 px-2 py-0 absolute bottom-10 md:top-50 left-50 rounded-full bg-cover"
           />
         ) : (
           <button
-            className="text-black bg-white w-24 h-24 px-2 py-0 absolute top-50 left-50 rounded-full hover:text-green-600 hover:border-green-600 hover:border-2 transition-all text-2xl font-semibold"
+            className={`w-24 h-24 px-2 py-0 absolute bottom-10 md:top-50 left-50 rounded-full text-2xl font-semibold ${
+              sectionCodes?.length <= 0
+                ? "bg-red-500 border-red-500 text-white"
+                : "bg-white border-green-600 text-black"
+            } ${
+              sectionCodes?.length <= 0
+                ? "hover:bg-red-600 hover:border-red-600"
+                : "hover:text-green-600 hover:border-green-600"
+            } ${
+              sectionCodes?.length <= 0 ? "pointer-events-none" : "" // Disable pointer events when disabled
+            }`}
             disabled={sectionCodes?.length <= 0}
             onClick={() => findMaterials()}
           >
@@ -133,8 +156,41 @@ export default function Home() {
           </button>
         )}
 
-        <div className="flex flex-1 flex-col min-w-[50vw] border-black border-l-white border-box border-2 h-[100vh] justify-center">
-          Right Pane
+        <div className="flex flex-1 flex-col min-w-[50vw] border-black border-l-white border-box border-2 h-[100vh] py-32">
+          <div className="flex flex-col gap-y-5 justify-center items-center pb-5">
+            <h1 className="md:text-5xl text-3xl font-semibold">
+              Course Materials
+            </h1>
+            {/* <p className="text-base md:w-72 sm:w-60">
+              Sourced from{" "}
+              <Link
+                href={"https://uci.bncollege.com/course-material/course-finder"}
+                className="underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Barnes and Nobles
+              </Link>
+            </p> */}
+          </div>
+
+          {materialsStatus && (
+            <div className="flex flex-col mx-auto gap-y-4 w-[14rem] md:w-[24rem] lg:w-[30rem] overflow-scroll drop-shadow-md">
+              {sectionCodes.map((code, index) => (
+                <div
+                  className="text-black bg-white p-2 rounded-lg"
+                  key={sectionCodes[index]}
+                >
+                  <h3 className="text-left text-xl font-semibold">
+                    {`${sectionCodes[index]} - {Some Course Title}`}
+                  </h3>
+                  <p className="text-left ml-4">
+                    {`Status: ${materialsStatus[code]}`}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </main>
