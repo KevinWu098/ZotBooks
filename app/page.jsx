@@ -197,7 +197,11 @@ export default function Home() {
                         : "text-black"
                     }`}
                   >
-                    {`Status: ${materialsStatus[code]?.status || "Unsearched"}`}
+                    {`Status: ${
+                      materialsStatus[code]?.status || // If searched
+                      materialsStatus[code] || // If not valid course code
+                      "Unsearched"
+                    }`}
                   </p>
                   <p className="text-left ml-4">
                     Required Materials:{" "}
