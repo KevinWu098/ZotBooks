@@ -4,54 +4,7 @@ import { useState } from "react";
 import { queryWebsoc, getCourseInfo, queryBN } from "./utils/query";
 import loader from "../public/loader.gif";
 import Image from "next/image";
-
-const BN_CODES = {
-  "I&C SCI": 459,
-  WRITING: 954,
-  ANTHRO: 36,
-  "AC ENG": 9,
-  AFAM: 18,
-  ANATOMY: 27,
-  ANESTH: 30,
-  ARABIC: 45,
-  ARMN: 48,
-  ART: 54,
-  "ART HIS": 63,
-  ARTS: 72,
-  ASIANAM: 81,
-  BANA: 85,
-  BATS: 90,
-  "BIO SCI": 100,
-  CAMPREC: 130,
-  CBE: 136,
-  "CHC/LAT": 144,
-  CHEM: 153,
-  CHINESE: 162,
-  CLASSIC: 171,
-  "CLT&THY": 180,
-  COGS: 186,
-  "COM LIT": 189,
-  COMPSCI: 198,
-  "CRM/LAW": 216,
-  CSE: 225,
-  DANCE: 234,
-  DATA: 237,
-  DERM: 240,
-  "DEV BIO": 243,
-  DRAMA: 252,
-  EARTHSS: 270,
-  EAS: 272,
-  EVO: 279,
-  ECON: 288,
-  ECPS: 290,
-  "ED AEF": 295,
-  "EDU ABR": 296,
-  EDUC: 297,
-  EECS: 306,
-  EHS: 309,
-  ENGLISH: 315,
-  ENGR: 324,
-};
+import { BN_CODES } from "./constants/constants";
 
 export default function Home() {
   const [studyListText, setStudyListText] = useState("");
@@ -200,14 +153,8 @@ export default function Home() {
             <button
               className={`w-24 h-24 px-2 py-0 absolute bottom-10 md:top-50 left-50 rounded-full text-2xl font-semibold hover:drop-shadow-lg ${
                 sectionCodes?.length <= 0
-                  ? "bg-red-500 border-red-500 text-white"
-                  : "bg-white border-green-600 text-black"
-              } ${
-                sectionCodes?.length <= 0
-                  ? "hover:bg-red-600 hover:border-red-600"
-                  : "hover:text-green-600 hover:border-green-600"
-              } ${
-                sectionCodes?.length <= 0 ? "cursor-not-allowed" : "" // Disable pointer events when disabled
+                  ? "bg-red-500 border-red-500 text-white hover:bg-red-600 hover:border-red-600 cursor-not-allowed"
+                  : "bg-white border-green-600 text-black hover:text-green-600 hover:border-green-60"
               }`}
               disabled={sectionCodes?.length <= 0}
               onClick={() => findMaterials()}
