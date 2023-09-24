@@ -16,6 +16,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+const UCI_CAMPUS_CODE = "8206";
 const TERM = "8206_1_23_F";
 app.get("/scrape", async (req, res) => {
   const BN_CODE = req.query.BN_CODE;
@@ -23,7 +24,7 @@ app.get("/scrape", async (req, res) => {
   const courseNumber = req.query.courseNumber;
 
   const sectionURL = new URL(
-    `https://uci.bncollege.com/course-material/findCourse?courseFinderSuggestion=SCHOOL_COURSE_SECTION&campus=8206&term=${TERM}&department=8206_1_${BN_CODE}&course=${courseNumber}&oer=false`
+    `https://uci.bncollege.com/course-material/findCourse?courseFinderSuggestion=SCHOOL_COURSE_SECTION&campus=${UCI_CAMPUS_CODE}&term=${TERM}&department=8206_1_${BN_CODE}&course=${courseNumber}&oer=false`
   );
 
   let sectionNumber = "";
@@ -38,7 +39,7 @@ app.get("/scrape", async (req, res) => {
   }
 
   const url = new URL(
-    `https://uci.bncollege.com/course-material-caching/course?campus=8206&term=${TERM}&course=8206_1_23_F_${BN_CODE}_${courseNumber}_${sectionNumber}&section=${sectionCode}&oer=false`
+    `https://uci.bncollege.com/course-material-caching/course?campus=${UCI_CAMPUS_CODE}&term=${TERM}&course=${TERM}_${BN_CODE}_${courseNumber}_${sectionNumber}&section=${sectionCode}&oer=false`
   );
 
   console.log(url);
